@@ -1,0 +1,25 @@
+@media (min-width: 768px) {
+    .hr{
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .hr{
+        margin: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    #qualification{
+         padding-left: 120px;
+    }
+}
+@media (min-width: 768px) {
+    #qualifications{
+         padding-left: 120px;
+    }
+}
+
+
+
