@@ -3,33 +3,37 @@ import './Contact.css'
 import { useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import axios from "axios"
+axios.defaults.withCredentials = true;
 const Contact = () => {
+  const [loading , setloading] = useState(false)
   const [form, setForm] = useState({
-    name:'',
-    email:'',
-    message:''
-  })
-
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
   const [userdata, setUserdata] = useState([])
 
-  const handleSubmit=(e)=>{
-      e.preventDefault()
-      setUserdata((prev)=>[...prev,form])
-      console.log('data sent successfully',userdata)
-       toast.success('Form submitted successfully!')
-      setForm({
-    name:'',
-    email:'',
-    message:''
-  })
+ const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
-  }
-
-  const handleChange=(e)=>{
-      const{name,value}= e.target
-      setForm(()=>({...form,[name]:value}))
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setloading(true);
+    try {
+      const { data } = await axios.post("http://localhost:3000/api/contact", form);
+      toast.success(data.message || "Message sent successfully!");
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Failed to send message.";
+      toast.error(errorMessage);
+    } finally {
+      setloading(false);
+    }
+  };
   return (
     <div className='mainContact bg-secondary' id='contact'>
     
@@ -50,6 +54,13 @@ const Contact = () => {
           value={form.email}
            onChange={handleChange}
            />
+        <input className='form-control py-3'
+         type="text"
+          placeholder='Enter Subject' 
+          name='subject' 
+          value={form.subject}
+           onChange={handleChange}
+           />
         <textarea id="" rows={5}
          className='form-control'
           placeholder='Message'
@@ -58,7 +69,8 @@ const Contact = () => {
            onChange={handleChange}>
         </textarea>
         <div className='text-center'>
-          <button className='btn btn-warning fw-bold text-secondary fs-5 form-control py-3' type='submit'>Send</button>
+          <button className='btn btn-warning fw-bold text-secondary fs-5 form-control py-3' type='submit'>  
+              {loading ? "Message sending" :"Send message"}</button>
           </div>
       </form>
       <img src="https://wallpapers.com/images/file/hands-on-keyboard-contact-us-uhmq1tyijy57ln84.jpg" alt="img" className='w-100 overflow-hidden' style={{height:"488px"}}/>
